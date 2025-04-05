@@ -9,17 +9,21 @@ import os
 # -----------------------------
 # Step 1: Load Dataset
 # -----------------------------
-df = pd.read_csv("data/fuel_data.csv")
+df = pd.read_csv("../data/fuel_data.csv")
 
 # -----------------------------
 # Step 2: Select Important Features
 # -----------------------------
 selected_features = [
-    "Fuel_Level (L)", "Fuel_Consumption", "Fuel_Tank Capacity", "Fuel_Efficiency",
-    "Idle_Time (min)", "Load (%)", "RPM", "Time (min)", "Average_Load",
-    "Speed (km/h)", "Throttle_Pos", "Battery_Volt",
-    "Engine_Temperature", "Oil_Pressure",
-    "Fuel_Price (₹)", "Temperature"
+    'Fuel Consumed (L/hr)',
+    'Fuel Tank Capacity (L)',
+    'Idle Time (min)',
+    'Average Load Last 5hr (%)',
+    'Throttle Position (%)',
+    'Battery Voltage (V)',
+    'Engine Temperature (°C)',
+    'Oil Pressure (psi)',
+    'Fuel Efficiency (km/L)'
 ]
 
 df = df[selected_features].copy()
@@ -33,13 +37,13 @@ scaled_data = scaler.fit_transform(df)
 
 # Save the scaler for use during prediction
 os.makedirs("model", exist_ok=True)
-joblib.dump(scaler, "model/fuel_scaler.pkl")
+joblib.dump(scaler, "model/scaler.save")  # <-- Matches your FastAPI load
 
 # -----------------------------
 # Step 4: Create Sequences for LSTM
 # -----------------------------
-sequence_length = 5  # Suitable for small dataset
-target_col = selected_features.index("Fuel_Consumption")
+sequence_length = 5  # Using past 5 records
+target_col = selected_features.index("Fuel Consumed (L/hr)")
 
 X, y = [], []
 for i in range(sequence_length, len(scaled_data)):
